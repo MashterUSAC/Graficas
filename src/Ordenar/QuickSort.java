@@ -1,37 +1,54 @@
-package Ordenar;
+package Modelo.Ordenar;
 
-import modelo.AlgoritmoOrdenamiento;
+import Modelo.AlgoritmoOrdenamiento;
+import javax.swing.SwingUtilities;
 
-public class QuickSort extends AlgoritmoOrdenamiento {
+public class QuickSort implements AlgoritmoOrdenamiento {
     @Override
-    public void ordenar(boolean ascendente) {
-        tiempoInicio = System.currentTimeMillis();
-        pasos = 0;
-        quickSort(0, datos.length - 1, ascendente);
+    public void ordenar(int[] valores, String[] categorias, boolean ascendente, int velocidad) {
+        quickSort(valores, categorias, 0, valores.length-1, ascendente, velocidad);
     }
     
-    private void quickSort(int low, int high, boolean ascendente) {
+    private void quickSort(int[] arr, String[] cats, int low, int high, boolean ascendente, int velocidad) {
         if (low < high) {
-            int pi = particion(low, high, ascendente);
-            quickSort(low, pi - 1, ascendente);
-            quickSort(pi + 1, high, ascendente);
+            int pi = partition(arr, cats, low, high, ascendente, velocidad);
+            quickSort(arr, cats, low, pi-1, ascendente, velocidad);
+            quickSort(arr, cats, pi+1, high, ascendente, velocidad);
         }
     }
     
-    private int particion(int low, int high, boolean ascendente) {
-        int pivot = datos[high];
+    private int partition(int[] arr, String[] cats, int low, int high, boolean ascendente, int velocidad) {
+        int pivot = arr[high];
         int i = low - 1;
         
         for (int j = low; j < high; j++) {
             boolean condicion = ascendente ? 
-                datos[j] < pivot : datos[j] > pivot;
-                
+                arr[j] < pivot : 
+                arr[j] > pivot;
+            
             if (condicion) {
                 i++;
-                intercambiar(i, j);
+                swap(arr, cats, i, j);
+                
+                try {
+                    Thread.sleep(velocidad);
+                    SwingUtilities.invokeLater(() -> {});
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
-        intercambiar(i + 1, high);
-        return i + 1;
+        swap(arr, cats, i+1, high);
+        return i+1;
+    }
+    
+    private void swap(int[] arr, String[] cats, int i, int j) {
+        int tempVal = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tempVal;
+        
+        String tempCat = cats[i];
+        cats[i] = cats[j];
+        cats[j] = tempCat;
     }
 }

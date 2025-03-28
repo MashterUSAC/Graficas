@@ -1,87 +1,45 @@
-import java.util.Vector;
+package Controlador;
+
+import Modelo.DatosCSV;
+import Modelo.Ordenar.BubbleSort;
+import Modelo.Ordenar.QuickSort;
+import Vista.VentanaPrincipal;
+import javax.swing.SwingWorker;
 
 public class ControladorOrdenamiento {
-    private long tiempoInicio;
-    private int pasos;
-    private int delay;
-
-    public ControladorOrdenamiento() {
-        pasos = 0;
-    }
-
-    public void setVelocidad(String velocidad) {
-        switch (velocidad) {
-            case "Alta":
-                delay = 100;
-                break;
-            case "Media":
-                delay = 500;
-                break;
-            case "Baja":
-                delay = 1000;
-                break;
-            default:
-                delay = 500;
-        }
-    }
-
-    public void iniciarTiempo() {
-        tiempoInicio = System.currentTimeMillis();
-        pasos = 0;
-    }
-
-    public String getTiempoTranscurrido() {
-        long tiempoTranscurrido = System.currentTimeMillis() - tiempoInicio;
-        long minutos = (tiempoTranscurrido / 1000) / 60;
-        long segundos = (tiempoTranscurrido / 1000) % 60;
-        long milisegundos = tiempoTranscurrido % 1000;
+    public static void iniciarOrdenamiento(DatosCSV modelo, VentanaPrincipal vista) {
+        String algoritmo = vista.getAlgoritmoSeleccionado();
+        boolean ascendente = vista.isAscendente();
+        int velocidad = vista.getVelocidadOrdenamiento();
         
-        return String.format("%02d:%02d:%03d", minutos, segundos, milisegundos);
-    }
-
-    public int getPasos() {
-        return pasos;
-    }
-
-    public void incrementarPasos() {
-        pasos++;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
-    // Métodos de ordenamiento (ejemplo con Bubble Sort)
-    public void bubbleSort(Vector<Integer> valores, Vector<String> categorias, boolean ascendente) {
-        int n = valores.size();
-        for (int i = 0; i < n-1; i++) {
-            for (int j = 0; j < n-i-1; j++) {
-                boolean condicion = ascendente ? 
-                    valores.get(j) > valores.get(j+1) : 
-                    valores.get(j) < valores.get(j+1);
+        vista.habilitarControles(false);
+        
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                int[] valores = modelo.getValores().clone();
+                String[] categorias = modelo.getCategorias().clone();
                 
-                if (condicion) {
-                    // Intercambiar valores
-                    int tempVal = valores.get(j);
-                    valores.set(j, valores.get(j+1));
-                    valores.set(j+1, tempVal);
-                    
-                    // Intercambiar categorías
-                    String tempCat = categorias.get(j);
-                    categorias.set(j, categorias.get(j+1));
-                    categorias.set(j+1, tempCat);
-                   
-                    incrementarPasos();
-                    
-                    try {
-                        Thread.sleep(getDelay());
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
+                switch(algoritmo) {
+                    case "Bubble Sort":
+                        new BubbleSort().ordenar(valores, categorias, ascendente, velocidad);
+                        break;
+                    case "Quick Sort":
+                        new QuickSort().ordenar(valores, categorias, ascendente, velocidad);
+                        break;
+                    // Agregar más algoritmos aquí
                 }
+                
+                modelo.setValores(valores);
+                modelo.setCategorias(categorias);
+                return null;
             }
-        }
+            
+            @Override
+            protected void done() {
+                vista.mostrarDatos(modelo.getCategorias(), modelo.getValores());
+                vista.habilitarControles(true);
+            }
+        }.execute();
     }
-
-    // Aquí deberías implementar los demás algoritmos de ordenamiento...
 }
