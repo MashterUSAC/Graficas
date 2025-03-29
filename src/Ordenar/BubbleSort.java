@@ -1,7 +1,7 @@
-package Modelo.Ordenar;
+package Ordenar;
 
 import Modelo.AlgoritmoOrdenamiento;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class BubbleSort implements AlgoritmoOrdenamiento {
     @Override
@@ -9,11 +9,11 @@ public class BubbleSort implements AlgoritmoOrdenamiento {
         int n = valores.length;
         for (int i = 0; i < n-1; i++) {
             for (int j = 0; j < n-i-1; j++) {
-                boolean condicion = ascendente ? 
+                boolean debeIntercambiar = ascendente ? 
                     valores[j] > valores[j+1] : 
                     valores[j] < valores[j+1];
                 
-                if (condicion) {
+                if (debeIntercambiar) {
                     // Intercambiar valores
                     int tempVal = valores[j];
                     valores[j] = valores[j+1];
@@ -27,7 +27,6 @@ public class BubbleSort implements AlgoritmoOrdenamiento {
                     // Pausa para visualización
                     try {
                         Thread.sleep(velocidad);
-                        SwingUtilities.invokeLater(() -> {});
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }

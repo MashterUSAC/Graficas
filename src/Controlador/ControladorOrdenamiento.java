@@ -1,45 +1,96 @@
 package Controlador;
 
-import Modelo.DatosCSV;
-import Modelo.Ordenar.BubbleSort;
-import Modelo.Ordenar.QuickSort;
+import Modelo.AlgoritmoOrdenamiento;
 import Vista.VentanaPrincipal;
-import javax.swing.SwingWorker;
+import Modelo.DatosCSV;
+import Ordenar.*;
+import Vista.PanelOrdenamiento;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class ControladorOrdenamiento {
-    public static void iniciarOrdenamiento(DatosCSV modelo, VentanaPrincipal vista) {
-        String algoritmo = vista.getAlgoritmoSeleccionado();
-        boolean ascendente = vista.isAscendente();
-        int velocidad = vista.getVelocidadOrdenamiento();
-        
-        vista.habilitarControles(false);
-        
-        new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                int[] valores = modelo.getValores().clone();
-                String[] categorias = modelo.getCategorias().clone();
-                
-                switch(algoritmo) {
-                    case "Bubble Sort":
-                        new BubbleSort().ordenar(valores, categorias, ascendente, velocidad);
-                        break;
-                    case "Quick Sort":
-                        new QuickSort().ordenar(valores, categorias, ascendente, velocidad);
-                        break;
-                    // Agregar más algoritmos aquí
-                }
-                
-                modelo.setValores(valores);
-                modelo.setCategorias(categorias);
-                return null;
-            }
-            
-            @Override
-            protected void done() {
-                vista.mostrarDatos(modelo.getCategorias(), modelo.getValores());
-                vista.habilitarControles(true);
-            }
-        }.execute();
+public class ControladorOrdenamiento implements ActionListener {
+    private VentanaPrincipal vista;
+    private DatosCSV modelo;
+
+    public ControladorOrdenamiento(VentanaPrincipal vista, DatosCSV modelo) {
+        this.vista = vista;
+        this.modelo = modelo;
+        this.vista.setControladorOrdenamiento(this);
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (modelo.getValores() == null) {
+            JOptionPane.showMessageDialog(
+                vista, 
+                "Primero cargue un archivo", 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Crear diálogo de configuración
+        PanelOrdenamiento panelConfig = new PanelOrdenamiento(vista);
+        int opcion = JOptionPane.showConfirmDialog(
+            vista, 
+            panelConfig, 
+            "Configuración de Ordenamiento", 
+            JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (opcion == JOptionPane.OK_OPTION) {
+            ordenarDatos(
+                panelConfig.getAlgoritmoSeleccionado(),
+                panelConfig.getDireccionOrdenamiento(),
+                panelConfig.getVelocidad()
+            );
+        }
+    }
+
+    private void ordenarDatos(String algoritmo, String direccion, int velocidad) {
+        new Thread(() -> {
+            try {
+                AlgoritmoOrdenamiento ordenador = crearAlgoritmo(algoritmo);
+                if (ordenador != null) {
+                    int[] valores = modelo.getValores().clone();
+                    String[] categorias = modelo.getCategorias().clone();
+                    
+                    ordenador.ordenar(valores, categorias, direccion.equals("Ascendente"), velocidad);
+                    
+                    modelo.setValores(valores);
+                    modelo.setCategorias(categorias);
+                    
+                    SwingUtilities.invokeLater(() -> {
+                        vista.actualizarGrafica(
+                            modelo.getCategorias(), 
+                            modelo.getValores(),
+                            modelo.getEjeX(),
+                            modelo.getEjeY()
+                        );
+                    });
+                }
+            } catch (Exception ex) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(
+                        vista, 
+                        "Error durante el ordenamiento: " + ex.getMessage(), 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                });
+            }
+        }).start();
+    }
+
+    private AlgoritmoOrdenamiento crearAlgoritmo(String nombre) {
+        switch(nombre) {
+            case "Bubble Sort": return new BubbleSort();
+            //case "Quick Sort": return new QuickSort();
+            default: return null;
+        }
+    }
+    
+    
 }

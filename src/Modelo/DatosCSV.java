@@ -3,6 +3,9 @@ package Modelo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DatosCSV {
     private String[] categorias;
@@ -16,15 +19,15 @@ public class DatosCSV {
         this.ejeX = encabezados[0];
         this.ejeY = encabezados[1];
         
-        java.util.List<String> tempCat = new java.util.ArrayList<>();
-        java.util.List<Integer> tempVal = new java.util.ArrayList<>();
-        String linea;
+        List<String> tempCat = new ArrayList<>();
+        List<Integer> tempVal = new ArrayList<>();
         
+        String linea;
         while ((linea = br.readLine()) != null) {
             String[] partes = linea.split(",");
             if (partes.length >= 2) {
-                tempCat.add(partes[0]);
-                tempVal.add(Integer.parseInt(partes[1]));
+                tempCat.add(partes[0].trim());
+                tempVal.add(Integer.parseInt(partes[1].trim()));
             }
         }
         
@@ -38,6 +41,7 @@ public class DatosCSV {
     public int[] getValores() { return valores; }
     public String getEjeX() { return ejeX; }
     public String getEjeY() { return ejeY; }
-    public void setCategorias(String[] categorias) { this.categorias = categorias; }
+    
     public void setValores(int[] valores) { this.valores = valores; }
+    public void setCategorias(String[] categorias) { this.categorias = categorias; }
 }

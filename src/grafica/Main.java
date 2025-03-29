@@ -1,16 +1,23 @@
-package grafica;
+package Lografica;
 
-import Modelo.DatosCSV;
 import Vista.VentanaPrincipal;
-import Controlador.ControladorPrincipal;
+import Modelo.DatosCSV;
+import Controlador.ControladorArchivo;
+import Controlador.ControladorOrdenamiento;
 import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            // Crear instancias
             VentanaPrincipal vista = new VentanaPrincipal();
             DatosCSV modelo = new DatosCSV();
-            new ControladorPrincipal(vista, modelo);
+            
+            // Crear controladores
+            ControladorArchivo controladorArchivo = new ControladorArchivo(vista, modelo);
+            ControladorOrdenamiento controladorOrdenamiento = new ControladorOrdenamiento(vista, modelo);
+            
+            // Configurar vista
             vista.setVisible(true);
         });
     }

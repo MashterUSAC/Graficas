@@ -5,70 +5,92 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
-    private PanelGrafica panelGrafica;
-    private PanelOrdenamiento panelOrdenamiento;
-    private JButton btnBuscar;
-    private JTextField txtRuta;
-    
+    private JButton btnCargarArchivo;
+    private JButton btnOrdenar;
+    private JTextField txtRutaArchivo;
+    private PanelGrafica panelGrafica; // Cambiado de Vista.PanelGrafica a PanelGrafica
+    private JTextField txtTituloGrafica;
+
     public VentanaPrincipal() {
         setTitle("USAC Processing Data");
-        setSize(900, 600);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        
-        // Panel superior con controles
+
+        // Panel superior
         JPanel panelSuperior = new JPanel();
-        btnBuscar = new JButton("Buscar Archivo");
-        txtRuta = new JTextField(30);
-        txtRuta.setEditable(false);
-        panelSuperior.add(new JLabel("Archivo CSV:"));
-        panelSuperior.add(txtRuta);
-        panelSuperior.add(btnBuscar);
-        add(panelSuperior, BorderLayout.NORTH);
+        txtRutaArchivo = new JTextField(30);
+        txtRutaArchivo.setEditable(false);
+        btnCargarArchivo = new JButton("Cargar Archivo");
         
-        // Panel central con gráfica
+        // Agregar campo para título de gráfica
+        txtTituloGrafica = new JTextField(20);
+        txtTituloGrafica.setText("Título de Gráfica");
+        panelSuperior.add(new JLabel("Archivo:"));
+        panelSuperior.add(txtRutaArchivo);
+        panelSuperior.add(btnCargarArchivo);
+        panelSuperior.add(new JLabel("Título:"));
+        panelSuperior.add(txtTituloGrafica);
+        add(panelSuperior, BorderLayout.NORTH);
+
+        // Panel central
         panelGrafica = new PanelGrafica();
         add(panelGrafica, BorderLayout.CENTER);
-        
-        // Panel inferior con controles de ordenamiento
-        panelOrdenamiento = new PanelOrdenamiento();
-        add(panelOrdenamiento, BorderLayout.SOUTH);
+
+        // Panel inferior
+        JPanel panelInferior = new JPanel();
+        btnOrdenar = new JButton("Ordenar");
+        btnOrdenar.setEnabled(false);
+        panelInferior.add(btnOrdenar);
+        add(panelInferior, BorderLayout.SOUTH);
+    }
+
+    // Métodos para controladores
+    public void setControladorArchivo(ActionListener listener) {
+        btnCargarArchivo.addActionListener(listener);
     }
     
-    public void setBuscarListener(ActionListener listener) {
-        btnBuscar.addActionListener(listener);
+    public JButton getBtnOrdenar() {
+        return btnOrdenar;
     }
     
-    public void setOrdenarListener(ActionListener listener) {
-        panelOrdenamiento.setOrdenarListener(listener);
+    public PanelGrafica getPanelGrafica() {
+    return panelGrafica;
     }
     
-    public void mostrarDatos(String[] categorias, int[] valores) {
+    public String getTituloGrafica() {
+    return txtTituloGrafica.getText();
+    }
+    
+    public void setTituloGrafica(String titulo) {
+    txtTituloGrafica.setText(titulo);
+    panelGrafica.setTituloGrafica(titulo);
+    }
+
+    public void setControladorOrdenamiento(ActionListener listener) {
+        btnOrdenar.addActionListener(listener);
+    }
+
+    public void mostrarRutaArchivo(String ruta) {
+        txtRutaArchivo.setText(ruta);
+    }
+
+    public void habilitarBotonOrdenar(boolean habilitar) {
+        btnOrdenar.setEnabled(habilitar);
+    }
+
+    public void actualizarGrafica(String[] categorias, int[] valores, String ejeX, String ejeY) {
         panelGrafica.setDatos(categorias, valores);
+        panelGrafica.setEjes(ejeX, ejeY);
+        panelGrafica.repaint();
+    }
+
+    public String mostrarFileChooser() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().getAbsolutePath();
+        }
+        return null;
     }
     
-    public void habilitarOrdenar(boolean habilitar) {
-        panelOrdenamiento.habilitarOrdenar(habilitar);
-    }
-    
-    public void habilitarControles(boolean habilitar) {
-        btnBuscar.setEnabled(habilitar);
-        panelOrdenamiento.habilitarControles(habilitar);
-    }
-    
-    public String getAlgoritmoSeleccionado() {
-        return panelOrdenamiento.getAlgoritmoSeleccionado();
-    }
-    
-    public boolean isAscendente() {
-        return panelOrdenamiento.isAscendente();
-    }
-    
-    public int getVelocidadOrdenamiento() {
-        return panelOrdenamiento.getVelocidadOrdenamiento();
-    }
-    
-    public void setRutaArchivo(String ruta) {
-        txtRuta.setText(ruta);
-    }
 }
