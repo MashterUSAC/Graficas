@@ -1,20 +1,30 @@
 package Controlador;
 
-import Modelo.DatosCSV;
 import Vista.VentanaPrincipal;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import Modelo.DatosCSV;
 
 public class ControladorPrincipal {
     private VentanaPrincipal vista;
     private DatosCSV modelo;
+    private ControladorArchivo controladorArchivo;
+    private ControladorOrdenamiento controladorOrdenamiento;
 
-    public ControladorPrincipal(VentanaPrincipal vista) {
+    public ControladorPrincipal(VentanaPrincipal vista, DatosCSV modelo) {
         this.vista = vista;
-        this.modelo = new DatosCSV();
+        this.modelo = modelo;
+    }
+    
+    public void setControladores(ControladorArchivo controladorArchivo, 
+                               ControladorOrdenamiento controladorOrdenamiento) {
+        this.controladorArchivo = controladorArchivo;
+        this.controladorOrdenamiento = controladorOrdenamiento;
         
-        // Configurar controladores específicos
-        new ControladorArchivo(vista, modelo);
-        new ControladorOrdenamiento(vista, modelo);
+        // Configurar vista
+        vista.setControladorArchivo(controladorArchivo);
+        vista.setControladorOrdenamiento(controladorOrdenamiento);
+    }
+    
+    public void habilitarOrdenamiento(boolean habilitar) {
+        vista.habilitarBotonOrdenar(habilitar);
     }
 }

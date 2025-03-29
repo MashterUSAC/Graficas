@@ -31,7 +31,7 @@ public class PanelGrafica extends JPanel {
     repaint();
     }
 
-    public void setEjes(String ejeX, String ejeY) {
+ public void setEjes(String ejeX, String ejeY) {
         this.ejeX = ejeX;
         this.ejeY = ejeY;
         repaint();

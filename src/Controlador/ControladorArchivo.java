@@ -19,26 +19,31 @@ public class ControladorArchivo implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String ruta = vista.mostrarFileChooser();
-        if (ruta != null) {
-            try {
-                modelo.cargarDatos(ruta);
-                vista.mostrarRutaArchivo(ruta);
+        cargarArchivo();
+    }
+    
+    private void cargarArchivo() {
+        try {
+            String rutaArchivo = vista.mostrarFileChooser();
+            if (rutaArchivo != null) {
+                modelo.cargarDatos(rutaArchivo);
+                
                 vista.actualizarGrafica(
-                    modelo.getCategorias(), 
+                    modelo.getCategorias(),
                     modelo.getValores(),
                     modelo.getEjeX(),
-                    modelo.getEjeY()
+                    modelo.getEjeY(),
+                    vista.getTituloGrafica() // Usa el título de la vista o uno personalizado
                 );
+                
                 vista.habilitarBotonOrdenar(true);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(
-                    vista, 
-                    "Error al leer el archivo: " + ex.getMessage(), 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE
-                );
+                vista.mostrarRutaArchivo(rutaArchivo);
             }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(vista, 
+                "Error al cargar archivo: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -1,78 +1,54 @@
+package Vista;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 public class PanelConfiguracion extends JPanel {
-    private JTextField txtRutaArchivo;
-    private JTextField txtTituloGrafica;
-    private JButton btnBuscar;
-    private JButton btnAceptar;
+    private JComboBox<String> comboAlgoritmos;
+    private JComboBox<String> comboDireccion;
+    private JComboBox<String> comboVelocidad;
 
     public PanelConfiguracion() {
-        initComponents();
+        setLayout(new GridLayout(3, 2, 5, 5));
+        setBorder(BorderFactory.createTitledBorder("Configuración de Ordenamiento"));
+        
+        // Configuración de algoritmos
+        String[] algoritmos = {"Bubble Sort", "Quick Sort", "Insertion Sort", "Selection Sort"};
+        comboAlgoritmos = new JComboBox<>(algoritmos);
+        add(new JLabel("Algoritmo:"));
+        add(comboAlgoritmos);
+        
+        // Configuración de dirección
+        String[] direcciones = {"Ascendente", "Descendente"};
+        comboDireccion = new JComboBox<>(direcciones);
+        add(new JLabel("Dirección:"));
+        add(comboDireccion);
+        
+        // Configuración de velocidad
+        String[] velocidades = {"Lenta", "Media", "Rápida"};
+        comboVelocidad = new JComboBox<>(velocidades);
+        add(new JLabel("Velocidad:"));
+        add(comboVelocidad);
     }
 
-    private void initComponents() {
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Configuración de componentes
-        JLabel lblRutaArchivo = new JLabel("Ruta del archivo:");
-        txtRutaArchivo = new JTextField(20);
-        btnBuscar = new JButton("Buscar");
-        
-        JLabel lblTituloGrafica = new JLabel("Título de la gráfica:");
-        txtTituloGrafica = new JTextField(20);
-        btnAceptar = new JButton("Aceptar");
-
-        // Posicionamiento
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(lblRutaArchivo, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        add(txtRutaArchivo, gbc);
-        
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        add(btnBuscar, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(lblTituloGrafica, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        add(txtTituloGrafica, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(btnAceptar, gbc);
+    public String getAlgoritmoSeleccionado() {
+        return (String) comboAlgoritmos.getSelectedItem();
     }
-
-    // Métodos para acceder a los componentes
-    public String getRutaArchivo() {
-        return txtRutaArchivo.getText();
+    
+    public String getDireccionOrdenamiento() {
+        return (String) comboDireccion.getSelectedItem();
     }
-
-    public void setRutaArchivo(String ruta) {
-        txtRutaArchivo.setText(ruta);
+    
+    public String getVelocidad() {
+        return (String) comboVelocidad.getSelectedItem();
     }
-
-    public String getTituloGrafica() {
-        return txtTituloGrafica.getText();
-    }
-
-    // Métodos para agregar listeners
-    public void addBuscarListener(ActionListener listener) {
-        btnBuscar.addActionListener(listener);
-    }
-
-    public void addAceptarListener(ActionListener listener) {
-        btnAceptar.addActionListener(listener);
+    
+    public int getVelocidadMs() {
+        switch(getVelocidad()) {
+            case "Rápida": return 100;
+            case "Media": return 300;
+            case "Lenta": return 500;
+            default: return 300;
+        }
     }
 }
